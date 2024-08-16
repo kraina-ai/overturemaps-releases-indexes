@@ -1,4 +1,4 @@
-name: "Generate an index for an Overture Maps release and create a PR"
+name: "Generate an index for the Overture Maps release and create a PR"
 on:
   workflow_dispatch:
     inputs:
@@ -9,10 +9,11 @@ on:
 
 env:
   PYTHON_VERSION: 3.12
+  COLUMNS: 120
 
 jobs:
   generate-release-index:
-    name: Generate an index for an Overture Maps ${{ inputs.releaseVersion }} release
+    name: Generate an index for the Overture Maps ${{ inputs.releaseVersion }} release
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
