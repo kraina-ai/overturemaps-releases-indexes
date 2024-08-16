@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          submodules: true
           token: ${{ secrets.CICD_PAT_TOKEN }}
       - name: Configure Git user
         run: |
