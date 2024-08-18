@@ -35,7 +35,7 @@ jobs:
   dispatch_generation:
     name: Dispatch release index generation
     needs: [ fetch_releases ]
-    if: !contains(needs.fetch_releases.outputs.matrix, '[]')
+    if: ${{ !contains(needs.fetch_releases.outputs.matrix, '[]') }}
     strategy:
       matrix:
         release: ${{fromJSON(needs.fetch_releases.outputs.matrix)}}
