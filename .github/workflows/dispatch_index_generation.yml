@@ -41,3 +41,4 @@ jobs:
     uses: ./.github/workflows/generate_release_index.yml
     with:
       releaseVersion: ${{ matrix.release }}
+    secrets: inherit
