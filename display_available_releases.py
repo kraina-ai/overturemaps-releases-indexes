@@ -2,8 +2,7 @@ import json
 from pathlib import Path
 from subprocess import call
 
-# This is the release with bbox with proper naming convention
-MINIMAL_SUPPORTED_RELEASE_VERSION = "2024-04-16-beta.0"
+from overturemaestro.release_index import MINIMAL_SUPPORTED_RELEASE_VERSION
 
 if __name__ == "__main__":
     call(["python", "overturemaps_data/utils/fetch-releases-from-s3.py"])
