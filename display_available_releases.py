@@ -9,5 +9,6 @@ if __name__ == "__main__":
         release
         for release in releases
         if not (Path("release_indexes") / release).exists()
+        and not release.startswith("2023")
     ]
     print(f"{releases=}")
