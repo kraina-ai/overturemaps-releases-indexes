@@ -1,0 +1,24 @@
+name: "Check available Overture Maps releases and dispatch generation"
+on:
+  workflow_dispatch:
+  
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.matrix.outputs.releases }}
+    steps:
+      - id: matrix
+        run: |
+          echo "releases=[\"a\", \"b\", \"c\"]" >> $GITHUB_OUTPUT
+      - run: |
+          echo "${{ steps.matrix.outputs.releases }}"
+  build:
+    needs: [ setup ]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        release: ${{fromJSON(needs.setup.outputs.matrix)}}
+    steps:
+      - run: |
+          echo "${{ matrix.release }}"
