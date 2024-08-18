@@ -10,7 +10,7 @@ jobs:
     steps:
       - id: matrix
         run: |
-          echo "releases=[\"a\", \"b\", \"c\"]" >> $GITHUB_OUTPUT
+          echo "releases=['a', 'b', 'c']" >> $GITHUB_OUTPUT
       - run: |
           echo "${{ steps.matrix.outputs.releases }}"
   build:
