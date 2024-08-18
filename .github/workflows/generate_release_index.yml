@@ -6,6 +6,12 @@ on:
         description: "Release version"
         required: true
         type: string
+  workflow_call:
+    inputs:
+      releaseVersion: 
+        description: "Release version"
+        required: true
+        type: string
 
 env:
   PYTHON_VERSION: 3.12

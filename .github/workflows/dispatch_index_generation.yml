@@ -11,6 +11,7 @@ env:
 
 jobs:
   fetch_releases:
+    name: Fetch available Overture Maps releases
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.matrix.outputs.releases }}
@@ -30,17 +31,13 @@ jobs:
       - id: matrix
         name: Run Python script
         run: python display_available_releases.py >> $GITHUB_OUTPUT
-      # - id: matrix
-      #   run: |
-      #     echo "releases=['a', 'b', 'c']" >> $GITHUB_OUTPUT
-      # - run: |
-      #     echo "${{ steps.matrix.outputs.releases }}"
+
   dispatch_generation:
+    name: Dispatch release index generation
     needs: [ fetch_releases ]
-    runs-on: ubuntu-latest
     strategy:
       matrix:
         release: ${{fromJSON(needs.fetch_releases.outputs.matrix)}}
-    steps:
-      - run: |
-          echo "${{ matrix.release }}"
+    uses: ./.github/workflows/generate_release_index.yml
+    with:
+      releaseVersion: ${{ matrix.release }}
