@@ -10,7 +10,9 @@ if __name__ == "__main__":
     releases = [
         release
         for release in releases
-        if not (Path("release_indexes") / release).exists()
+        if not (
+            Path("release_indexes") / release / "release_index_content.json"
+        ).exists()
         and release >= MINIMAL_SUPPORTED_RELEASE_VERSION
     ]
     print(f"{releases=}")
