@@ -22,7 +22,7 @@ jobs:
     name: Load themes and types for the ${{ inputs.releaseVersion }} release
     runs-on: ubuntu-latest
     outputs:
-      theme_type_pairs: ${{ steps.theme_type_step.outputs.releases }}
+      theme_type_pairs: ${{ steps.theme_type_step.outputs.theme_type_pairs }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -87,6 +87,7 @@ jobs:
         with:
           submodules: true
           token: ${{ secrets.CICD_PAT_TOKEN }}
+          ref: ${{ format('release/{0}', inputs.releaseVersion) }}
       - name: Configure Git user
         run: |
           git config --local user.name "Kraina CI/CD"

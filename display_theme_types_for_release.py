@@ -15,10 +15,10 @@ if __name__ == "__main__":
     df["theme"] = df["split_filename"].apply(lambda x: x[3].split("=")[1])
     df["type"] = df["split_filename"].apply(lambda x: x[4].split("=")[1])
 
-    theme_type_tuples = list(
+    theme_type_pairs = list(
         df[["theme", "type"]]
         .drop_duplicates()
         .reset_index(drop=True)
         .agg("|".join, axis=1)
     )
-    print(f"{theme_type_tuples=}")
+    print(f"{theme_type_pairs=}")
