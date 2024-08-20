@@ -109,14 +109,16 @@ jobs:
           pip install -r requirements.txt
       - name: Run Python script
         run: python consolidate_release_indexes.py "${{ inputs.releaseVersion }}"
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
+      - name: Commit & Push changes
+        uses: actions-js/push@master
         with:
-          title: ${{ format('feat(CI/CD){0} add {1} release index', ':', inputs.releaseVersion) }}
+          github_token: ${{ secrets.CICD_PAT_TOKEN }}
+          author_name: 'Kraina CI/CD'
+          author_email: cicd@kraina.ai
           branch: ${{ format('release/{0}', inputs.releaseVersion) }}
-          labels: release
-          base: main
-          token: ${{ secrets.CICD_PAT_TOKEN }}
-          author: Kraina CI/CD <cicd@kraina.ai>
-          committer: Kraina CI/CD <cicd@kraina.ai>
-          commit-message: ${{ format('feat(CI/CD){0} consolidate release indexes', ':') }}
+          rebase: true
+          message: ${{ format('feat(CI/CD){0} consolidate {1} release index', ':', inputs.releaseVersion) }}
+      - name: Create pull request
+        run: gh pr create -B main -H ${{ format('release/{0}', inputs.releaseVersion) }} --title '${{ format('feat(CI/CD){0} add {1} release index', ':', inputs.releaseVersion) }}' --body 'Created by Github action'
+        env:
+            GITHUB_TOKEN: ${{ secrets.CICD_PAT_TOKEN }}
