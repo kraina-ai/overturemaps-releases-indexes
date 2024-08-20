@@ -108,7 +108,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
       - name: Run Python script
-        run: python consolidate_release_indexes.py.py "${{ inputs.releaseVersion }}"
+        run: python consolidate_release_indexes.py "${{ inputs.releaseVersion }}"
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
