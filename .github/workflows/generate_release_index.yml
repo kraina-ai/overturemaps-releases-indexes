@@ -40,9 +40,15 @@ jobs:
         name: Run Python script
         run: |
           python display_theme_types_for_release.py "${{ inputs.releaseVersion }}" >> $GITHUB_OUTPUT
+      - name: Create dedicated branch
+        uses: peterjgrainger/action-create-branch@v2.2.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.CICD_PAT_TOKEN }}
+        with:
+          branch: ${{ format('release/{0}', inputs.releaseVersion) }}
 
   generate-release-index:
-    name: Generate an index for the ${{ inputs.releaseVersion }} release
+    name: Generate an index for the ${{ inputs.releaseVersion }} release (${{ matrix.theme_type_pair }})
     needs: [ load-available-theme-type-pairs ]
     if: ${{ !contains(needs.load-available-theme-type-pairs.outputs.theme_type_pairs, '[]') }}
     strategy:
@@ -54,6 +60,7 @@ jobs:
         with:
           submodules: true
           token: ${{ secrets.CICD_PAT_TOKEN }}
+          ref: ${{ format('release/{0}', inputs.releaseVersion) }}
       - name: Configure Git user
         run: |
           git config --local user.name "Kraina CI/CD"
@@ -71,7 +78,7 @@ jobs:
       - name: Commit & Push changes
         uses: actions-js/push@master
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.CICD_PAT_TOKEN }}
           author_name: 'Kraina CI/CD'
           author_email: cicd@kraina.ai
           branch: ${{ format('release/{0}', inputs.releaseVersion) }}
