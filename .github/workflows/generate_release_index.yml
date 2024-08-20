@@ -18,8 +18,36 @@ env:
   COLUMNS: 120
 
 jobs:
+  load-available-theme-type-pairs:
+    name: Load themes and types for the ${{ inputs.releaseVersion }} release
+    runs-on: ubuntu-latest
+    outputs:
+      theme_type_pairs: ${{ steps.theme_type_step.outputs.releases }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          token: ${{ secrets.CICD_PAT_TOKEN }}
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - id: theme_type_step
+        name: Run Python script
+        run: |
+          python display_theme_types_for_release.py "${{ inputs.releaseVersion }}" >> $GITHUB_OUTPUT
+
   generate-release-index:
-    name: Generate an index for the Overture Maps ${{ inputs.releaseVersion }} release
+    name: Generate an index for the ${{ inputs.releaseVersion }} release
+    needs: [ load-available-theme-type-pairs ]
+    if: ${{ !contains(needs.load-available-theme-type-pairs.outputs.theme_type_pairs, '[]') }}
+    strategy:
+      matrix:
+        theme_type_pair: ${{fromJSON(needs.load-available-theme-type-pairs.outputs.theme_type_pairs)}}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -31,7 +59,7 @@ jobs:
           git config --local user.name "Kraina CI/CD"
           git config --local user.email "cicd@kraina.ai"
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
       - name: Install dependencies
@@ -39,7 +67,40 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
       - name: Run Python script
-        run: python generate_release_index.py "${{ inputs.releaseVersion }}"
+        run: python generate_release_index.py "${{ inputs.releaseVersion }}" "${{ matrix.theme_type_pair }}"
+      - name: Commit & Push changes
+        uses: actions-js/push@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          author_name: 'Kraina CI/CD'
+          author_email: cicd@kraina.ai
+          branch: ${{ format('release/{0}', inputs.releaseVersion) }}
+          rebase: true
+          message: ${{ format('feat(CI/CD){0} add {1} release index for {2}', ':', inputs.releaseVersion, matrix.theme_type_pair) }}
+
+  consolidate-indexes-and-create-pr:
+    name: Consolidate indexes and create a PR for the ${{ inputs.releaseVersion }} release index
+    needs: [ generate-release-index ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          token: ${{ secrets.CICD_PAT_TOKEN }}
+      - name: Configure Git user
+        run: |
+          git config --local user.name "Kraina CI/CD"
+          git config --local user.email "cicd@kraina.ai"
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run Python script
+        run: python consolidate_release_indexes.py.py "${{ inputs.releaseVersion }}"
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
@@ -50,4 +111,4 @@ jobs:
           token: ${{ secrets.CICD_PAT_TOKEN }}
           author: Kraina CI/CD <cicd@kraina.ai>
           committer: Kraina CI/CD <cicd@kraina.ai>
-          commit-message: ${{ format('feat(CI/CD){0} add {1} release index', ':', inputs.releaseVersion) }}
+          commit-message: ${{ format('feat(CI/CD){0} consolidate release indexes', ':') }}
