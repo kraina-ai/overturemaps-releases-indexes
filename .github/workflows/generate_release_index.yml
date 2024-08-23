@@ -74,7 +74,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
       - name: Run Python script
-        run: python generate_release_index.py "${{ inputs.releaseVersion }}" "${{ matrix.theme_type_pair }}"
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 600
+          max_attempts: 5
+          retry_on: error
+          command: python generate_release_index.py "${{ inputs.releaseVersion }}" "${{ matrix.theme_type_pair }}"
       - name: Create commit
         run: |
           git add . && git commit -m "${{ format('feat(CI/CD){0} add {1} release index for {2}', ':', inputs.releaseVersion, matrix.theme_type_pair) }}"
