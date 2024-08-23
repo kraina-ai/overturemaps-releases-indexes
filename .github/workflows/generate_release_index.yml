@@ -75,15 +75,16 @@ jobs:
           pip install -r requirements.txt
       - name: Run Python script
         run: python generate_release_index.py "${{ inputs.releaseVersion }}" "${{ matrix.theme_type_pair }}"
-      - name: Commit & Push changes
-        uses: actions-js/push@master
+      - name: Create commit
+        run: |
+          git commit -am ${{ format('feat(CI/CD){0} add {1} release index for {2}', ':', inputs.releaseVersion, matrix.theme_type_pair) }}
+      - name: Push changes
+        uses: nick-fields/retry@v3
         with:
-          github_token: ${{ secrets.CICD_PAT_TOKEN }}
-          author_name: 'Kraina CI/CD'
-          author_email: cicd@kraina.ai
-          branch: ${{ format('release/{0}', inputs.releaseVersion) }}
-          rebase: true
-          message: ${{ format('feat(CI/CD){0} add {1} release index for {2}', ':', inputs.releaseVersion, matrix.theme_type_pair) }}
+          timeout_seconds: 10
+          max_attempts: 5
+          retry_on: error
+          command: git pull --rebase && git push
 
   consolidate-indexes-and-create-pr:
     name: Consolidate indexes and create a PR for the ${{ inputs.releaseVersion }} release index
