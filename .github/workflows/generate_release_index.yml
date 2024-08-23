@@ -77,7 +77,7 @@ jobs:
         run: python generate_release_index.py "${{ inputs.releaseVersion }}" "${{ matrix.theme_type_pair }}"
       - name: Create commit
         run: |
-          git commit -am "${{ format('feat(CI/CD){0} add {1} release index for {2}', ':', inputs.releaseVersion, matrix.theme_type_pair) }}"
+          git add . && git commit -m "${{ format('feat(CI/CD){0} add {1} release index for {2}', ':', inputs.releaseVersion, matrix.theme_type_pair) }}"
       - name: Push changes
         uses: nick-fields/retry@v3
         with:
