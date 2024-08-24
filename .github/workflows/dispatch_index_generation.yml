@@ -1,0 +1,45 @@
+name: "Check available Overture Maps releases and dispatch generation"
+on:
+  schedule:
+    - cron: "0 1 * * *"
+
+  workflow_dispatch:
+  
+env:
+  PYTHON_VERSION: 3.12
+
+
+jobs:
+  fetch_releases:
+    name: Fetch available Overture Maps releases
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.matrix.outputs.releases }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          token: ${{ secrets.CICD_PAT_TOKEN }}
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - id: matrix
+        name: Run Python script
+        run: python display_available_releases.py >> $GITHUB_OUTPUT
+
+  dispatch_generation:
+    name: Dispatch release index generation
+    needs: [ fetch_releases ]
+    if: ${{ !contains(needs.fetch_releases.outputs.matrix, '[]') }}
+    strategy:
+      matrix:
+        release: ${{fromJSON(needs.fetch_releases.outputs.matrix)}}
+    uses: ./.github/workflows/generate_release_index.yml
+    with:
+      releaseVersion: ${{ matrix.release }}
+    secrets: inherit

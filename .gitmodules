@@ -1,0 +1,6 @@
+[submodule "overturemaestro"]
+	path = overturemaestro
+	url = https://github.com/kraina-ai/overturemaestro
+[submodule "data"]
+	path = overturemaps_data
+	url = https://github.com/OvertureMaps/data
