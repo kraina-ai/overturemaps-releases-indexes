@@ -128,3 +128,14 @@ jobs:
         run: gh pr create -B main -H ${{ format('release/{0}', inputs.releaseVersion) }} --title '${{ format('feat(CI/CD){0} add {1} release index', ':', inputs.releaseVersion) }}' --body 'Created by Github action'
         env:
             GITHUB_TOKEN: ${{ secrets.CICD_PAT_TOKEN }}
+      - name: Find pull request
+        uses: juliangruber/find-pull-request-action@v1
+        id: find-pull-request
+        with:
+          branch: ${{ format('release/{0}', inputs.releaseVersion) }}
+      - name: Merge pull request
+        uses: juliangruber/merge-pull-request-action@v1
+        with:
+          github-token: ${{ secrets.CICD_PAT_TOKEN }}
+          number: ${{ steps.find-pull-request.outputs.number }}
+          method: squash
