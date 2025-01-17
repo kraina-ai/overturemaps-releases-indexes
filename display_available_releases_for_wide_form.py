@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 from subprocess import call
 
-from overturemaestro.cache import _get_local_release_cache_directory
+from overturemaestro.cache import _get_local_wide_form_release_cache_directory
 from overturemaestro.release_index import MINIMAL_SUPPORTED_RELEASE_VERSION
 
 if __name__ == "__main__":
@@ -12,7 +12,8 @@ if __name__ == "__main__":
         release
         for release in releases
         if not (
-            _get_local_release_cache_directory(release) / "release_index_content.json"
+            _get_local_wide_form_release_cache_directory(release)
+            / "release_index_content.json"
         ).exists()
         and release >= MINIMAL_SUPPORTED_RELEASE_VERSION
     ]

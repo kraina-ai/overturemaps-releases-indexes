@@ -1,5 +1,6 @@
 import sys
 
+from overturemaestro.cache import _get_local_release_cache_directory
 from overturemaestro.release_index import _generate_release_index
 
 if __name__ == "__main__":
@@ -10,7 +11,7 @@ if __name__ == "__main__":
         release=release_version,
         theme=theme_value,
         type=type_value,
-        index_location_path=f"release_indexes/{release_version}",
+        index_location_path=_get_local_release_cache_directory(release_version),
         verbosity_mode="verbose",
     )
     if not is_generated:

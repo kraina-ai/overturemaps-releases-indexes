@@ -1,0 +1,88 @@
+name: "Generate an index for the Overture Maps release and create a PR"
+on:
+  workflow_dispatch:
+    inputs:
+      releaseVersion:
+        description: "Release version"
+        required: true
+        type: string
+  workflow_call:
+    inputs:
+      releaseVersion: 
+        description: "Release version"
+        required: true
+        type: string
+
+env:
+  PYTHON_VERSION: 3.12
+  COLUMNS: 120
+
+jobs:
+  generate-release-index:
+    name: Generate an index for the ${{ inputs.releaseVersion }} release (${{ matrix.theme_type_pair }})
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          token: ${{ secrets.CICD_PAT_TOKEN }}
+          ref: ${{ format('release/{0}', inputs.releaseVersion) }}
+      - name: Configure Git user
+        run: |
+          git config --local user.name "Kraina CI/CD"
+          git config --local user.email "cicd@kraina.ai"
+      - name: Create dedicated branch
+        uses: peterjgrainger/action-create-branch@v3.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.CICD_PAT_TOKEN }}
+        with:
+          branch: ${{ format('release_wide_form/{0}', inputs.releaseVersion) }}
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run Python script
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 600
+          max_attempts: 5
+          retry_on: error
+          command: python generate_wide_form_release_index.py "${{ inputs.releaseVersion }}"
+      - name: Create commit
+        run: |
+          git add . && git commit -m "${{ format('feat(CI/CD){0} add {1} wide form release index', ':', inputs.releaseVersion) }}"
+      - name: Push changes
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 60
+          max_attempts: 5
+          retry_on: error
+          command: git pull --rebase && git push
+      # - name: Commit & Push changes
+      #   uses: actions-js/push@master
+      #   with:
+      #     github_token: ${{ secrets.CICD_PAT_TOKEN }}
+      #     author_name: 'Kraina CI/CD'
+      #     author_email: cicd@kraina.ai
+      #     branch: ${{ format('release/{0}', inputs.releaseVersion) }}
+      #     rebase: true
+      #     message: ${{ format('feat(CI/CD){0} consolidate {1} release index', ':', inputs.releaseVersion) }}
+      - name: Create pull request
+        run: gh pr create -B main -H ${{ format('release_wide_form/{0}', inputs.releaseVersion) }} --title '${{ format('feat(CI/CD){0} add {1} wide form release index', ':', inputs.releaseVersion) }}' --body 'Created by Github action'
+        env:
+            GITHUB_TOKEN: ${{ secrets.CICD_PAT_TOKEN }}
+      - name: Find pull request
+        uses: juliangruber/find-pull-request-action@v1
+        id: find-pull-request
+        with:
+          branch: ${{ format('release_wide_form/{0}', inputs.releaseVersion) }}
+      - name: Merge pull request
+        uses: juliangruber/merge-pull-request-action@v1
+        with:
+          github-token: ${{ secrets.CICD_PAT_TOKEN }}
+          number: ${{ steps.find-pull-request.outputs.number }}
+          method: squash
