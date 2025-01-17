@@ -1,2 +1,2 @@
-overturemaestro[index-generation]>=0.2.2
+overturemaestro[index-generation]>=0.2.3
 boto3
