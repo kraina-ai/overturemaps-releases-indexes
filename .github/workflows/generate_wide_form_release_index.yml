@@ -35,7 +35,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.CICD_PAT_TOKEN }}
         with:
-          branch: 
+          branch: ${{ format('release_wide_form/{0}', inputs.releaseVersion) }}
       - name: Switch branch
         run: |
           git checkout -b ${{ format('release_wide_form/{0}', inputs.releaseVersion) }}
