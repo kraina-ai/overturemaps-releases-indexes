@@ -34,8 +34,8 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          python -m pip install --upgrade pip uv
+          uv pip install -r requirements.txt --system
       - id: theme_type_step
         name: Run Python script
         run: |
@@ -71,8 +71,8 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          python -m pip install --upgrade pip uv
+          uv pip install -r requirements.txt --system
       - name: Run Python script
         uses: nick-fields/retry@v3
         with:
@@ -111,8 +111,8 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          python -m pip install --upgrade pip uv
+          uv pip install -r requirements.txt --system
       - name: Run Python script
         run: python consolidate_release_indexes.py "${{ inputs.releaseVersion }}"
       - name: Commit & Push changes
