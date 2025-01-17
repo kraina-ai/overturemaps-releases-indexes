@@ -38,7 +38,7 @@ jobs:
           branch: ${{ format('release_wide_form/{0}', inputs.releaseVersion) }}
       - name: Switch branch
         run: |
-          git checkout -b ${{ format('release_wide_form/{0}', inputs.releaseVersion) }}
+          git checkout -b ${{ format('release_wide_form/{0}', inputs.releaseVersion) }} origin/${{ format('release_wide_form/{0}', inputs.releaseVersion) }}
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
