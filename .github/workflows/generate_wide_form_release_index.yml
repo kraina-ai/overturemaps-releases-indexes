@@ -26,7 +26,6 @@ jobs:
         with:
           submodules: true
           token: ${{ secrets.CICD_PAT_TOKEN }}
-          ref: ${{ format('release/{0}', inputs.releaseVersion) }}
       - name: Configure Git user
         run: |
           git config --local user.name "Kraina CI/CD"
