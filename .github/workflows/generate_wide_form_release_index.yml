@@ -36,9 +36,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.CICD_PAT_TOKEN }}
         with:
           branch: ${{ format('release_wide_form/{0}', inputs.releaseVersion) }}
-      - name: Switch branch
-        run: |
-          git checkout -b ${{ format('release_wide_form/{0}', inputs.releaseVersion) }} origin/${{ format('release_wide_form/{0}', inputs.releaseVersion) }}
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          token: ${{ secrets.CICD_PAT_TOKEN }}
+          ref: ${{ format('release_wide_form/{0}', inputs.releaseVersion) }}
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
