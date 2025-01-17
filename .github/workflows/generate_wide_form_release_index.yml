@@ -1,4 +1,4 @@
-name: "Generate an index for the Overture Maps release and create a PR"
+name: "Generate an index for the Overture Maps wide format release and create a PR"
 on:
   workflow_dispatch:
     inputs:

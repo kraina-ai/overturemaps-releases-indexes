@@ -1,4 +1,4 @@
-name: "Check available Overture Maps releases and dispatch generation"
+name: "Check available Overture Maps releases and dispatch generation of release indexes"
 on:
   schedule:
     - cron: "0 1 * * *"
