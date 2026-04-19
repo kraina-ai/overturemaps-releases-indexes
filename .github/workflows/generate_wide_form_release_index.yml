@@ -24,7 +24,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: true
           token: ${{ secrets.CICD_PAT_TOKEN }}
       - name: Configure Git user
         run: |
@@ -38,7 +37,6 @@ jobs:
           branch: ${{ format('release_wide_form/{0}', inputs.releaseVersion) }}
       - uses: actions/checkout@v4
         with:
-          submodules: true
           token: ${{ secrets.CICD_PAT_TOKEN }}
           ref: ${{ format('release_wide_form/{0}', inputs.releaseVersion) }}
       - name: Setup Python
