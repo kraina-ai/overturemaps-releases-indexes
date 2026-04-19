@@ -1,4 +1,8 @@
-from overturemaestro.release_index import MINIMAL_SUPPORTED_RELEASE_VERSION, get_available_release_versions
+from overturemaestro.cache import _get_local_release_cache_directory
+from overturemaestro.release_index import (
+    MINIMAL_SUPPORTED_RELEASE_VERSION,
+    get_available_release_versions,
+)
 
 if __name__ == "__main__":
     releases = get_available_release_versions()
