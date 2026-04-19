@@ -1,13 +1,7 @@
-import json
-from pathlib import Path
-from subprocess import call
-
-from overturemaestro.cache import _get_local_release_cache_directory
-from overturemaestro.release_index import MINIMAL_SUPPORTED_RELEASE_VERSION
+from overturemaestro.release_index import MINIMAL_SUPPORTED_RELEASE_VERSION, get_available_release_versions
 
 if __name__ == "__main__":
-    call(["python", "overturemaps_data/utils/fetch-releases-from-s3.py"])
-    releases = json.loads(Path("releases.json").read_text())["releases"]
+    releases = get_available_release_versions()
     releases = [
         release
         for release in releases
