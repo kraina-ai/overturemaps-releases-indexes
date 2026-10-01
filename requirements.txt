@@ -1,3 +1,4 @@
-overturemaestro==0.6.0
+# overturemaestro==0.6.0
+overturemaestro @ git+https://github.com/kraina-ai/overturemaestro@fix-new-taxonomy-schema
 boto3
 duckdb<1.4.0
